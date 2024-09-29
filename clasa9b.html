@@ -82,8 +82,6 @@
                 perechi.push([baieti.pop(), baieti.pop()]);
             }
 
-          
-
             // Distribuim restul perechilor în ordine
             let indexPerechi = 0;
             for (let i = 0; i < 5; i++) {
@@ -125,18 +123,20 @@
 
         document.getElementById('exportBtn').addEventListener('click', function () {
             const table = document.getElementById('distributieTable').outerHTML;
-            const content = `
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <meta charset="UTF-8">
-                <title>Distribuție Elevi</title>
-              </head>
-              <body>${table}</body>
-            </html>`;
+            const header = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Distribuție Elevi</title></head><body>';
+            const footer = '</body></html>';
+            
+            const doc = header + table + footer;
 
-            const blob = htmlDocx.asBlob(content);
-            saveAs(blob, 'distributie_elevi.docx');
+            const blob = new Blob([doc], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'distributie_elevi.doc';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         });
     </script>
 </body>
