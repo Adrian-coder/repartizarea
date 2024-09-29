@@ -1,0 +1,35 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+.container {
+    margin-bottom: 20px;
+}
+
+#distributieTable {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+#distributieTable th, #distributieTable td {
+    padding: 10px;
+    text-align: center;
+}
+
+#distributieTable th {
+    background-color: #f4f4f4;
+}
+
+button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}

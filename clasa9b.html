@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribuție Elevi</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://unpkg.com/html-docx-js@0.4.0/dist/html-docx.js"></script>
+</head>
+
+<body>
+    <h1>Distribuție Elevi în Bănci</h1>
+    <div class="container">
+        <button id="btn9B">Distribuie Clasa 9B</button>
+    </div>
+
+    <h2>Distribuție Bănci</h2>
+    <table id="distributieTable" border="1">
+        <thead>
+            <tr>
+                <th>Rândul 1 (geam)</th>
+                <th>Rândul 2 (mijloc)</th>
+                <th>Rândul 3 (perete)</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <button id="exportBtn">Exportă în Word</button>
+
+    <script>
+        const elevi9B = [
+            "Balaban Nicolina", "Bejenari Maxim", "Bîlici Lia", "Bodnariuc Iana",
+            "Bondari Nichita", "Butucel Marius", "Chiriţa Ariadna", "Ciugureanu Andrei",
+            "Culicov Evgheni", "Doscalciuc Andreia", "Eremenco Gabriel", "Frasîneac Maxim",
+            "Garaz Ştefan", "Gordaș Mihail", "Grimailo Vsevolod", "Jaloba Bogdan",
+            "Moisa Vladislav", "Moruz Mihail", "Moşac Denis", "Oală Maxim",
+            "Ojerelcov Mădălina", "Palamarciuc Nicolai", "Pascaru Siuzana", "Pupăză Valeria",
+            "Raileanu Vasile", "Surugiu Bogdana", "Şchiopu Elena", "Toma Maxim",
+            "Trenta Anastasia", "Zubic Mihail"
+        ];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function distribuieElevi9B() {
+            return distribuieElevi(elevi9B);
+        }
+
+        function distribuieElevi(elevi) {
+            const baieti = elevi.filter(elev => !elev.endsWith("a"));
+            const fete = elevi.filter(elev => elev.endsWith("a"));
+
+            shuffleArray(baieti);
+            shuffleArray(fete);
+
+            const banci = {
+                rand1: [],
+                rand2: [],
+                rand3: []
+            };
+
+            let perechi = [];
+
+            // Formăm perechi băiat-fată
+            while (baieti.length > 0 && fete.length > 0) {
+                perechi.push([baieti.pop(), fete.pop()]);
+            }
+
+            // Dacă rămân fete, le punem împreună
+            while (fete.length > 1) {
+                perechi.push([fete.pop(), fete.pop()]);
+            }
+
+            // Dacă rămân băieți, îi punem împreună
+            while (baieti.length > 1) {
+                perechi.push([baieti.pop(), baieti.pop()]);
+            }
+
+          
+
+            // Distribuim restul perechilor în ordine
+            let indexPerechi = 0;
+            for (let i = 0; i < 5; i++) {
+                if (!banci.rand1[i] && indexPerechi < perechi.length) {
+                    banci.rand1[i] = perechi[indexPerechi++];
+                }
+                if (!banci.rand2[i] && indexPerechi < perechi.length) {
+                    banci.rand2[i] = perechi[indexPerechi++];
+                }
+                if (!banci.rand3[i] && indexPerechi < perechi.length) {
+                    banci.rand3[i] = perechi[indexPerechi++];
+                }
+            }
+
+            return banci;
+        }
+
+        function updateTable(banci) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = ''; // Golește tabelul
+
+            const maxRows = Math.max(banci.rand1.length, banci.rand2.length, banci.rand3.length);
+
+            for (let i = 0; i < maxRows; i++) {
+                let row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${banci.rand1[i] ? banci.rand1[i].join(' și ') : ''}</td>
+                    <td>${banci.rand2[i] ? banci.rand2[i].join(' și ') : ''}</td>
+                    <td>${banci.rand3[i] ? banci.rand3[i].join(' și ') : ''}</td>
+                `;
+                tableBody.appendChild(row);
+            }
+        }
+
+        document.getElementById('btn9B').addEventListener('click', () => {
+            const banci = distribuieElevi9B();
+            updateTable(banci);
+        });
+
+        document.getElementById('exportBtn').addEventListener('click', function () {
+            const table = document.getElementById('distributieTable').outerHTML;
+            const content = `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta charset="UTF-8">
+                <title>Distribuție Elevi</title>
+              </head>
+              <body>${table}</body>
+            </html>`;
+
+            const blob = htmlDocx.asBlob(content);
+            saveAs(blob, 'distributie_elevi.docx');
+        });
+    </script>
+</body>
+</html>
