@@ -1,56 +1,228 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alege Clasa</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aranjare elevi în bănci</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    h2, h3 {
+      color: #2c3e50;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: inline-block;
+      margin: 5px 10px 5px 0;
+    }
+    input[type="text"], input[type="number"], select {
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: center;
+      vertical-align: top;
+      font-size: 18px;
+    }
+    th {
+      background-color: #e9e9e9;
+    }
+   
+    .elev {
+      display: inline-block;
+      width: 18%;
+      margin: 5px 1%;
+      font-size: 18px;
+    }
+    #perechiContainer {
+      margin-bottom: 20px;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.05);
+      max-width: 100%;
+    }
 
-        h1 {
-            margin-bottom: 30px;
-        }
-
-        .button-container {
-            display: flex;
-            gap: 20px;
-        }
-
-        .button {
-            background-color: #4CAF50; /* Verde */
-            color: white;
-            padding: 15px 25px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-
-        .button:hover {
-            background-color: #45a049; /* Verde mai închis */
-        }
-    </style>
+    .baiat::before { content: '👦 '; }
+    .fata::before { content: '👧 '; }
+    #exportSection {
+      background: white;
+      padding: 20px;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Alege Clasa</h1>
-    <div class="button-container">
-        <button class="button" onclick="window.location.href='clasa6a.html'">Clasa 6A</button>
-        <button class="button" onclick="window.location.href='clasa9b.html'">Clasa 9B</button>
-    </div>
+  <h2>Aplicație: Aranjarea elevilor în bănci</h2>
+
+  <div class="form-group">
+    <label>Clasa:
+      <select id="clasa" onchange="setEleviPentruClasa()">
+        <option value="9B">9B</option>
+        <option value="alta">Altă clasă...</option>
+      </select>
+    </label>
+    <input type="text" id="clasaCustom" placeholder="Ex: 7A" style="display:none;" />
+  </div>
+
+  <div id="perechiContainer"></div>
+
+  <div class="form-group">
+    <label>Bănci per rând: <input type="number" id="numarRanduri" value="6" min="1" /></label>
+    <label>Număr rânduri: <input type="number" id="banciPerRand" value="3" min="1" /></label>
+    <button onclick="genereazaAranjare()">Generează aranjarea</button>
+    <button onclick="exportToPDF()">Descarcă PDF</button>
+  </div>
+
+  <div id="exportSection">
+    <h3 style="text-align:center">Liceul Teoretic „Lucian Blaga”, mun. Bălți</h3>
+    <div id="aranjare"></div>
+  </div>
+
+  <script>
+    let baieti = [];
+    let fete = [];
+
+    function setEleviPentruClasa() {
+      const clasaSelect = document.getElementById("clasa").value;
+      const customInput = document.getElementById("clasaCustom");
+      if (clasaSelect === "9B") {
+        customInput.style.display = "none";
+        baieti = ["Zubic Mihail", "Ciugureanu Andrei", "Gordaș Mihail", "Bejenari Maxim", "Garaz Ştefan", "Moşac Denis", "Jaloba Bogdan", "Butucel Marius", "Culicov Evgheni", "Palamarciuc Nicolai", "Eremenco Gabriel", "Raileanu Vasile", "Toma Maxim", "Oală Maxim", "Frasîneac Maxim", "Grimailo Vsevolod", "Moruz Mihail", "Moisa Vladislav"];
+        fete = ["Ojerelcov Mădălina", "Pascaru Siuzana", "Balaban Nicolina", "Trenta Anastasia", "Bîlici Lia", "Surugiu Bogdana", "Chiriţa Ariadna", "Şchiopu Elena", "Doscalciuc Andreia", "Bondari Nichita", "Bodnariuc Iana", "Pupăză Valeria", "Arcea Victoria"];
+      } else {
+        customInput.style.display = "inline-block";
+        baieti = [];
+        fete = [];
+      }
+      afiseazaEleviPentruBife();
+    }
+
+    function afiseazaEleviPentruBife() {
+      const container = document.getElementById("perechiContainer");
+      container.innerHTML = "<h3>Selectează elevii cu probleme de vedere</h3><div style='display: flex; flex-wrap: wrap;'>";
+      [...baieti, ...fete].forEach((nume, index) => {
+        container.innerHTML += `<div class='elev'><input type="checkbox" id="vedere-${index}" /> ${nume}</div>`;
+      });
+      container.innerHTML += "</div>";
+    }
+
+    let ultimaAranjare = [];
+
+    function genereazaAranjare() {
+      const clasaVal = document.getElementById("clasa").value === "alta" ? document.getElementById("clasaCustom").value : document.getElementById("clasa").value;
+      const randuri = parseInt(document.getElementById("numarRanduri").value);
+      const banciPeRand = parseInt(document.getElementById("banciPerRand").value);
+
+      const totiElevii = [...baieti, ...fete];
+      const eleviCuVedere = [];
+      const eleviFaraVedere = [];
+
+      totiElevii.forEach((nume, index) => {
+        const vedere = document.getElementById(`vedere-${index}`)?.checked;
+        if (vedere) eleviCuVedere.push(nume);
+        else eleviFaraVedere.push(nume);
+      });
+
+      const baietiCuVedere = baieti.filter(n => eleviCuVedere.includes(n));
+      const baietiFaraVedere = baieti.filter(n => eleviFaraVedere.includes(n));
+      const feteCuVedere = fete.filter(n => eleviCuVedere.includes(n));
+      const feteFaraVedere = fete.filter(n => eleviFaraVedere.includes(n));
+
+      const baietiRandom = shuffle(baietiCuVedere).concat(shuffle(baietiFaraVedere));
+      const feteRandom = shuffle(feteCuVedere).concat(shuffle(feteFaraVedere));
+
+      const perechi = [];
+      while (baietiRandom.length > 0 && feteRandom.length > 0) {
+        perechi.push([baietiRandom.shift(), feteRandom.shift()]);
+      }
+      while (feteRandom.length > 0) {
+        const f1 = feteRandom.shift();
+        const f2 = feteRandom.shift() || "";
+        perechi.push([f1, f2]);
+      }
+      while (baietiRandom.length > 0) {
+        const b1 = baietiRandom.shift();
+        const b2 = baietiRandom.shift() || "";
+        perechi.push([b1, b2]);
+      }
+
+      ultimaAranjare = perechi;
+
+      let html = `<h3 style='text-align:center'>Aranjare elevi - clasa ${clasaVal}</h3><table>`;
+      let index = 0;
+      for (let r = 0; r < randuri; r++) {
+        html += "<tr>";
+        for (let b = 0; b < banciPeRand; b++) {
+          if (index < perechi.length) {
+            const [e1, e2] = perechi[index++];
+            const cls1 = fete.includes(e1) ? 'fata' : 'baiat';
+            const cls2 = fete.includes(e2) ? 'fata' : 'baiat';
+            html += `<td><div class="${cls1}">${e1}</div><div class="${cls2}">${e2}</div></td>`;
+          } else {
+            html += "<td>—</td>";
+          }
+        }
+        html += "</tr>";
+      }
+      html += "</table>";
+      document.getElementById("aranjare").innerHTML = html;
+    }
+
+     function exportToPDF() {
+  const element = document.getElementById("exportSection");
+  const opt = {
+    margin:       [10, 10, 10, 10], // top, right, bottom, left în mm
+    filename:     'aranjare_elevi.pdf',
+    image:        { type: 'jpeg', quality: 1 },
+    html2canvas:  { scale: 1.5, useCORS: true },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait', putOnlyUsedFonts: true }
+  };
+  html2pdf().set(opt).from(element).toPdf().get('pdf').then(pdf => {
+    pdf.internal.pageSize.height = 297; // forțăm înălțime pagină A4
+  }).save();
+}
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+
+    window.onload = setEleviPentruClasa;
+  </script>
 </body>
 </html>
