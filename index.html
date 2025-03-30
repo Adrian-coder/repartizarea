@@ -199,18 +199,23 @@
       document.getElementById("aranjare").innerHTML = html;
     }
 
-     function exportToPDF() {
+ function exportToPDF() {
   const element = document.getElementById("exportSection");
-  const opt = {
-    margin:       [10, 10, 10, 10], // top, right, bottom, left în mm
-    filename:     'aranjare_elevi.pdf',
-    image:        { type: 'jpeg', quality: 1 },
-    html2canvas:  { scale: 1.5, useCORS: true },
-    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait', putOnlyUsedFonts: true }
-  };
-  html2pdf().set(opt).from(element).toPdf().get('pdf').then(pdf => {
-    pdf.internal.pageSize.height = 297; // forțăm înălțime pagină A4
-  }).save();
+
+
+  window.scrollTo(0, 0);
+
+  setTimeout(() => {
+    const opt = {
+      margin:       [10, 10, 10, 10],
+      filename:     'aranjare_elevi.pdf',
+      image:        { type: 'jpeg', quality: 1 },
+      html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
+  }, 500);
 }
 
     function shuffle(array) {
